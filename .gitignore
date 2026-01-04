@@ -1,0 +1,65 @@
+# =========================
+# Visual Studio / .NET
+# =========================
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build outputs
+bin/
+obj/
+**/bin/
+**/obj/
+
+# Rider
+.idea/
+
+# =========================
+# NuGet
+# =========================
+*.nupkg
+# NuGet Packages folder
+packages/
+# NuGet v3
+*.nuget.props
+*.nuget.targets
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# =========================
+# OS generated
+# =========================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# =========================
+# Logs
+# =========================
+*.log
+logs/
+
+# =========================
+# Docker
+# =========================
+docker-compose.override.yml
+*.dockerfile
+*.env
+docker-compose*.yaml
+
+# =========================
+# JetBrains Rider
+# =========================
+.idea/
+*.sln.iml
+
+# =========================
+# Others
+# =========================
+global.json
+*.swp
+*.tmp
+*.bak

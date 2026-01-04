@@ -1,0 +1,36 @@
+services:
+  employee-service:
+    build:
+      context: ./src
+      dockerfile: EmployeeService/Dockerfile
+    container_name: hrm_employee_service
+    ports:
+      - "${EMPLOYEE_SERVICE_PORT}:${EMPLOYEE_SERVICE_INTERNAL_PORT}"
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
+      ConnectionStrings__EmployeeDb: >
+        Host=${POSTGRES_HOST};
+        Port=${POSTGRES_PORT};
+        Database=${POSTGRES_DB};
+        Username=${POSTGRES_USER};
+        Password=${POSTGRES_PASSWORD}
+    networks:
+      - ${DOCKER_NETWORK}
+
+  apigateway:
+    build:
+      context: ./src
+      dockerfile: ApiGateway/Dockerfile
+    container_name: hrm_api_gateway
+    ports:
+      - "${API_GATEWAY_PORT}:${API_GATEWAY_INTERNAL_PORT}"
+    depends_on:
+      - employee-service
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
+    networks:
+      - ${DOCKER_NETWORK}
+
+networks:
+  hrm-network:
+    external: true

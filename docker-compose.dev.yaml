@@ -1,0 +1,24 @@
+services:
+  employee-service:
+    image: employee-service
+    container_name: hrm_employee_service
+    build:
+      context: ./src
+      dockerfile: EmployeeService/Dockerfile
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
+      ConnectionStrings__EmployeeDb: >
+        Host=${POSTGRES_HOST};
+        Port=${POSTGRES_PORT};
+        Database=${POSTGRES_DB};
+        Username=${POSTGRES_USER};
+        Password=${POSTGRES_PASSWORD}
+    ports:
+      - "${EMPLOYEE_SERVICE_PORT}:${EMPLOYEE_SERVICE_INTERNAL_PORT}"
+    networks:
+      - ${DOCKER_NETWORK}
+
+networks:
+  hrm-network:
+    external: true

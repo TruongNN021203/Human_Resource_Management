@@ -20,9 +20,7 @@ obj/
 # NuGet
 # =========================
 *.nupkg
-# NuGet Packages folder
 packages/
-# NuGet v3
 *.nuget.props
 *.nuget.targets
 project.lock.json
@@ -43,18 +41,30 @@ desktop.ini
 logs/
 
 # =========================
-# Docker
+# Environment / Secrets
+# =========================
+.env
+*.local
+
+# =========================
+# Docker (ignore override & dev secrets)
 # =========================
 docker-compose.override.yml
-*.dockerfile
-*.env
-docker-compose*.yaml
+# Cho phép push Dockerfile và docker-compose chính
+# *.dockerfile  # bỏ comment nếu muốn ignore file dockerfile
+# docker-compose*.yaml  # bỏ comment nếu muốn ignore các file compose khác, giữ file chính
+# Nếu bạn có docker-compose.dev.yml mà muốn push, bỏ comment như dưới:
+# docker-compose.dev.override.yml
 
 # =========================
 # JetBrains Rider
 # =========================
 .idea/
 *.sln.iml
+
+# =========================
+# VSCode
+.vscode/
 
 # =========================
 # Others

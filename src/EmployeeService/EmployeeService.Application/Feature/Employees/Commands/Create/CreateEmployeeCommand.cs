@@ -1,6 +1,6 @@
 using Mediator;
 
-namespace EmployeeService.Application.Commands;
+namespace EmployeeService.Application.Employees.Commands.Create;
 
 public record CreateEmployeeCommand(
     string Code,

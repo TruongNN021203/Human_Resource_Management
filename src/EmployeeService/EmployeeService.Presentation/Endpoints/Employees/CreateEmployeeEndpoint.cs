@@ -1,5 +1,5 @@
 using Ardalis.ApiEndpoints;
-using EmployeeService.Application.Commands;
+using EmployeeService.Application.Employees.Commands.Create;
 using Mediator;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Routes;

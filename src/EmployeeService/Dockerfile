@@ -22,14 +22,16 @@ COPY EmployeeService/EmployeeService.Domain/EmployeeService.Domain.csproj \
     EmployeeService/EmployeeService.Domain/
 COPY Shared.Kernel/Shared.Kernel.csproj \
     Shared.Kernel/
-
+COPY Contracts/Contracts.csproj \
+    Contracts/
+    
 # Restore
 RUN dotnet restore EmployeeService/EmployeeService.Presentation/EmployeeService.Presentation.csproj
 
 # Copy toàn bộ source
 COPY EmployeeService/ EmployeeService/
 COPY Shared.Kernel/ Shared.Kernel/
-
+COPY Contracts/ Contracts/
 # Build
 WORKDIR /src/EmployeeService/EmployeeService.Presentation
 RUN dotnet build EmployeeService.Presentation.csproj -c Release -o /app/build

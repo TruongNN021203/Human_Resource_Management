@@ -6,6 +6,7 @@ public static class Router
     {
         public const string Tags = "Employees";
         public const string Employees = "api/employees";
+        public const string EmployeeDetail = $"{Employees}/{{id:long}}";
     }
 
 }

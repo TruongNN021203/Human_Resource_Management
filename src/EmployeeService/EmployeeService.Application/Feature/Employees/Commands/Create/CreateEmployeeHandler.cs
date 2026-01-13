@@ -1,12 +1,8 @@
-
-using EmployeeService.Application.Commands;
 using EmployeeService.Application.Interfaces;
 using EmployeeService.Domain.Entities;
 using Mediator;
 
-
-
-namespace EmployeeService.Application.Handlers;
+namespace EmployeeService.Application.Employees.Commands.Create;
 
 public sealed class CreateEmployeeHandler
     : IRequestHandler<CreateEmployeeCommand, long>
@@ -56,38 +52,3 @@ public sealed class CreateEmployeeHandler
         }
     }
 }
-
-// public sealed class CreateEmployeeHandler
-//     : IRequestHandler<CreateEmployeeCommand, long>
-// {
-//     private readonly IEmployeeRepository _employeeRepository;
-
-//     public CreateEmployeeHandler(IEmployeeRepository employeeRepository)
-//     {
-//         _employeeRepository = employeeRepository;
-//     }
-
-//     public async ValueTask<long> Handle(
-
-//         CreateEmployeeCommand command,
-//         CancellationToken ct)
-//     {
-//         var exists = await _employeeRepository
-//             .EmailExistsAsync(command.Email, ct);
-
-//         if (exists)
-//             throw new InvalidOperationException("Employee email already exists");
-
-//         var employee = new Employee(
-//             command.Code,
-//             command.FullName,
-//             command.Email,
-//             command.DateOfBirth
-//         );
-
-//         await _employeeRepository.AddAsync(employee, ct);
-
-//         return employee.Id;
-//     }
-// }
-

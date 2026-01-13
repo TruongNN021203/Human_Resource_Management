@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using EmployeeService.Application.Interfaces;
 using EmployeeService.Domain.Entities;
 using EmployeeService.Infrastructure.Data;
@@ -25,4 +26,28 @@ public sealed class EmployeeRepository : IEmployeeRepository
         _dbContext.Employees.Add(employee);
         await _dbContext.SaveChangesAsync(ct);
     }
+
+    public async Task<IReadOnlyList<TResult>> ListEmployeeAsync<TResult>(
+        Expression<Func<Employee, TResult>> selector,
+        CancellationToken cancellationToken)
+    {
+        return await _dbContext.Employees
+            .AsNoTracking()
+            .Select(selector)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<TResult?> GetEmployeeDetailAsync<TResult>(
+        long id,
+        Expression<Func<Employee, TResult>> selector,
+        CancellationToken cancellationToken)
+    {
+        return await _dbContext.Employees
+            .AsNoTracking()
+            .Where(e => e.Id == id)
+            .Select(selector)
+            .FirstOrDefaultAsync(cancellationToken);
+    }
+
+
 }

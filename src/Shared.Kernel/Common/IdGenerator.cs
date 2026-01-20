@@ -15,20 +15,33 @@ namespace Shared.Kernel.Common
 
         private static long _lastTimestamp = -1L;
         private static long _sequence = 0L;
+        // static IdGenerator()
+        // {
+        //     if (
+        //         long.TryParse(Environment.GetEnvironmentVariable("MachineId"), out var id)
+        //         && id >= 0
+        //         && id <= _maxWorkerId
+        //     )
+        //     {
+        //         _workerId = id;
+        //     }
+        //     else
+        //     {
+        //         var hostname = Dns.GetHostName();
+        //         _workerId = hostname.GetHashCode() & 0x3F; // 6 bits
+        //     }
+        // }
         static IdGenerator()
         {
             if (
-                long.TryParse(Environment.GetEnvironmentVariable("MachineId"), out var id)
-                && id >= 0
-                && id <= _maxWorkerId
+                !long.TryParse(Environment.GetEnvironmentVariable("MachineId"), out _workerId)
+                || _workerId < 0
+                || _workerId > _maxWorkerId
             )
             {
-                _workerId = id;
-            }
-            else
-            {
-                var hostname = Dns.GetHostName();
-                _workerId = hostname.GetHashCode() & 0x3F; // 6 bits
+                throw new InvalidOperationException(
+                    "MachineId must be set and between 0 and 63"
+                );
             }
         }
 

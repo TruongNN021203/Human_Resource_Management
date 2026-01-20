@@ -3,6 +3,7 @@ using System;
 using EmployeeService.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EmployeeService.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(EmployeeDbContext))]
-    partial class EmployeeDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260120094113_CreateEntity01")]
+    partial class CreateEntity01
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -241,7 +244,7 @@ namespace EmployeeService.Infrastructure.Persistence.Migrations
                         .HasMaxLength(26)
                         .HasColumnType("character varying(26)");
 
-                    b.Property<long>("SalaryGradeId")
+                    b.Property<long?>("SalaryGradeId")
                         .HasColumnType("bigint");
 
                     b.Property<string>("Status")
@@ -256,9 +259,6 @@ namespace EmployeeService.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DepartmentId")
-                        .IsUnique();
-
                     b.HasIndex("EducationLevelId");
 
                     b.HasIndex("Email")
@@ -268,8 +268,6 @@ namespace EmployeeService.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("PublicId")
                         .IsUnique();
-
-                    b.HasIndex("SalaryGradeId");
 
                     b.ToTable("employees", (string)null);
                 });
@@ -587,12 +585,6 @@ namespace EmployeeService.Infrastructure.Persistence.Migrations
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("EmployeeService.Domain.Entities.WorkType", null)
-                        .WithMany()
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("EmployeeService.Domain.Entities.Department", b =>
@@ -605,11 +597,6 @@ namespace EmployeeService.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("EmployeeService.Domain.Entities.Employee", b =>
                 {
-                    b.HasOne("EmployeeService.Domain.Entities.Department", null)
-                        .WithOne()
-                        .HasForeignKey("EmployeeService.Domain.Entities.Employee", "DepartmentId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("EmployeeService.Domain.Entities.EducationLevel", null)
                         .WithMany()
                         .HasForeignKey("EducationLevelId")
@@ -619,14 +606,6 @@ namespace EmployeeService.Infrastructure.Persistence.Migrations
                         .WithMany()
                         .HasForeignKey("PositionId")
                         .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("EmployeeService.Domain.Entities.SalaryGrade", "SalaryGrade")
-                        .WithMany("Employees")
-                        .HasForeignKey("SalaryGradeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("SalaryGrade");
                 });
 
             modelBuilder.Entity("EmployeeService.Domain.Entities.EmployeeDetail", b =>
@@ -663,11 +642,6 @@ namespace EmployeeService.Infrastructure.Persistence.Migrations
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("EmployeeService.Domain.Entities.SalaryGrade", b =>
-                {
-                    b.Navigation("Employees");
                 });
 #pragma warning restore 612, 618
         }

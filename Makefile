@@ -64,3 +64,6 @@ gateway:
 
 employee:
 	$(COMPOSE) up -d --build employee-service
+	
+auth:
+	$(COMPOSE) up -d --build auth-service

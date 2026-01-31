@@ -1,0 +1,2 @@
+CREATE DATABASE hrm_employee;
+CREATE DATABASE hrm_auth;

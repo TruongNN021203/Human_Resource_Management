@@ -24,7 +24,7 @@ public sealed class GetEmployeeDetailQueryHandler
       e => new GetEmployeeDetailResponse
       {
           PublicId = e.PublicId,
-          Code = e.Code,
+          Code = e.EmployeeCode,
           FullName = e.FullName,
           Email = e.Email,
           DateOfBirth = e.DateOfBirth,

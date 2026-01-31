@@ -1,9 +1,6 @@
 using EmployeeService.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Shared.Kernel.Common;
-
 namespace EmployeeService.Infrastructure.Persistence.Configurations;
 
 public class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
@@ -24,7 +21,7 @@ public class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
                      .HasMaxLength(26)
                      .IsRequired();
 
-              builder.Property(x => x.Code)
+              builder.Property(x => x.EmployeeCode)
                      .IsRequired()
                      .HasMaxLength(50);
 
@@ -35,6 +32,23 @@ public class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
               builder.Property(x => x.Email)
                      .IsRequired()
                      .HasMaxLength(150);
+              builder.HasOne<Position>()
+                     .WithMany()
+                     .HasForeignKey(e => e.PositionId)
+                     .OnDelete(DeleteBehavior.Restrict);
+              builder.HasOne<EducationLevel>()
+                     .WithMany()
+                     .HasForeignKey(e => e.EducationLevelId)
+                     .OnDelete(DeleteBehavior.Restrict);
+              builder.HasOne<Department>()
+                     .WithOne()
+                     .HasForeignKey<Employee>(e => e.DepartmentId)
+                     .OnDelete(DeleteBehavior.Restrict);
+              builder
+                .HasOne(e => e.SalaryGrade)
+                .WithMany(s => s.Employees)
+                .HasForeignKey(e => e.SalaryGradeId)
+                .OnDelete(DeleteBehavior.Restrict);
 
               builder.HasIndex(x => x.Email).IsUnique();
               builder.HasIndex(x => x.PublicId).IsUnique();

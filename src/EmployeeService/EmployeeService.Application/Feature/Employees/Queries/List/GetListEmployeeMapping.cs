@@ -10,7 +10,7 @@ public static class GetListEmployeeMapping
     employee => new GetListEmployeeResponse
     {
         PublicId = employee.PublicId,
-        Code = employee.Code,
+        Code = employee.EmployeeCode,
         FullName = employee.FullName,
         Email = employee.Email,
         DateOfBirth = employee.DateOfBirth,

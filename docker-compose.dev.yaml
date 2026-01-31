@@ -19,6 +19,26 @@ services:
     networks:
       - ${DOCKER_NETWORK}
 
+  auth-service:
+    image: auth-service
+    container_name: hrm_auth_service
+    build:
+      context: ./src
+      dockerfile: AuthService/Dockerfile
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
+      ConnectionStrings__AuthDb: >
+        Host=${POSTGRES_HOST};
+        Port=${POSTGRES_PORT};
+        Database=${AUTH_POSTGRES_DB};
+        Username=${POSTGRES_USER};
+        Password=${POSTGRES_PASSWORD}
+    ports:
+      - "${AUTH_SERVICE_PORT}:${AUTH_SERVICE_INTERNAL_PORT}"
+    networks:
+      - ${DOCKER_NETWORK}
+
 networks:
   hrm-network:
     external: true

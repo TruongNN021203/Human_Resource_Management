@@ -9,7 +9,7 @@ public class AuthDbContext : DbContext
         : base(options)
     {
     }
-    // Aggregate roots
+
     public DbSet<Account> Accounts => Set<Account>();
 
 

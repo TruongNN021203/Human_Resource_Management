@@ -5,6 +5,7 @@ using EmployeeService.Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Shared.Kernel.Security;
 
 namespace EmployeeService.Infrastructure;
 //implement các interface mà Application khai báo, chủ yếu làm vc với database
@@ -23,6 +24,7 @@ public static class DependencyInjection
 
         services.AddScoped<IEmployeeRepository, EmployeeRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddJWTAuthenticationScheme(configuration);
         return services;
     }
 }

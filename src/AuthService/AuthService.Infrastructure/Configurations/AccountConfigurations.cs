@@ -47,9 +47,20 @@ public class AccountConfiguration : IEntityTypeConfiguration<Account>
             .HasMaxLength(200);
 
         builder.Property(x => x.Status)
-            .IsRequired()
-            .HasMaxLength(20);
+          .HasConversion<string>()
+          .HasMaxLength(20)
+          .IsRequired();
 
+        builder.Property(x => x.Role)
+               .HasConversion<string>()
+               .HasMaxLength(20)
+               .IsRequired();
+        builder.Property(x => x.PublicId)
+               .HasConversion(
+                   v => v.ToString(),
+                   v => Ulid.Parse(v))
+               .HasMaxLength(26)
+               .IsRequired();
         builder.HasIndex(x => x.Email).IsUnique();
         builder.HasIndex(x => x.EmployeeCode).IsUnique();
         builder.HasIndex(x => x.IdentityNumber).IsUnique();

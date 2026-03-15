@@ -37,7 +37,12 @@ public class EmployeeDetailConfiguration : IEntityTypeConfiguration<AccountContr
 
         builder.Property(x => x.Nationality)
             .HasMaxLength(50);
-
+        builder.Property(x => x.PublicId)
+              .HasConversion(
+                  v => v.ToString(),
+                  v => Ulid.Parse(v))
+              .HasMaxLength(26)
+              .IsRequired();
         // Assuming a relationship with the Account entity
         builder.HasOne<AuthService.Domain.Entities.Account>()
             .WithMany()

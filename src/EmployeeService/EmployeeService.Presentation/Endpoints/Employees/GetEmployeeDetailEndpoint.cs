@@ -3,6 +3,7 @@ using Ardalis.ApiEndpoints;
 using Contracts.ApiWrapper;
 using EmployeeService.Application.Employees.Queries.Detail;
 using Mediator;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Routes;
 using Swashbuckle.AspNetCore.Annotations;
@@ -11,6 +12,7 @@ namespace Presentation.Endpoints.Employees;
 
 [ApiController]
 [Route(Router.EmployeeRoutes.Employees)]
+//[Authorize]
 public sealed class GetEmployeeDetailEndpoint(ISender sender)
     : EndpointBaseAsync
         .WithRequest<long>

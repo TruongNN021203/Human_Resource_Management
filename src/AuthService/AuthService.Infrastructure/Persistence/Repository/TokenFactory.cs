@@ -1,0 +1,52 @@
+﻿using AuthService.Application.Interface;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using Shared.Kernel.Security;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+
+namespace AuthService.Infrastructure.Persistence.Repository
+{
+    public class TokenFactory : ITokenFactory
+    {
+        private readonly JwtSettings _jwtSettings;
+
+        public TokenFactory(IOptions<JwtSettings> jwtSettings)
+        {
+            _jwtSettings = jwtSettings.Value;
+        }
+
+        public DateTime AccesstokenExpiredTime =>
+          DateTime.UtcNow.AddHours(_jwtSettings.ExpireTimeAccessToken);
+        public DateOnly RefreshtokenExpiredTime =>
+            DateOnly.FromDateTime(
+                DateTime.UtcNow.AddDays(_jwtSettings.ExpireTimeRefreshToken));
+
+
+
+        public string CreateAccessToken(
+            IEnumerable<KeyValuePair<string, object>> claimList,
+            DateTime expirationTime)
+        {
+            var claims = claimList.Select(c =>
+                new Claim(c.Key, c.Value.ToString()!)).ToList();
+
+            var key = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
+
+            var credentials = new SigningCredentials(
+                key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                issuer: _jwtSettings.Issuer,
+                audience: _jwtSettings.Audience,
+                claims: claims,
+                expires: expirationTime,
+                signingCredentials: credentials
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+    }
+}

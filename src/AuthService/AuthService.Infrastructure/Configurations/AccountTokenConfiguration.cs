@@ -17,7 +17,7 @@ public class AccountTokenConfiguration : IEntityTypeConfiguration<AccountToken>
             .ValueGeneratedNever();
 
         builder.Property(x => x.Token)
-            .HasMaxLength(500);  
+            .HasMaxLength(500);
 
         builder.Property(x => x.ClientIp)
             .HasMaxLength(50);
@@ -30,7 +30,12 @@ public class AccountTokenConfiguration : IEntityTypeConfiguration<AccountToken>
 
         builder.Property(x => x.ExpiredTime)
             .IsRequired();
-
+        builder.Property(x => x.PublicId)
+              .HasConversion(
+                  v => v.ToString(),
+                  v => Ulid.Parse(v))
+              .HasMaxLength(26)
+              .IsRequired();
         builder.HasOne(x => x.Account)
             .WithMany()
             .HasForeignKey(x => x.AccountId)

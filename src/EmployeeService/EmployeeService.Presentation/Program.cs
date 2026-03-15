@@ -2,6 +2,7 @@
 using EmployeeService.Infrastructure;
 using EmployeeService.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using Shared.Kernel.Security;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +30,8 @@ builder.Services.AddSwaggerGen(c =>
         Version = "v1"
     });
 });
+builder.Services.AddJWTAuthenticationScheme(builder.Configuration);
+
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
@@ -43,7 +46,8 @@ if (app.Environment.IsDevelopment())
           c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
       });
 }
-
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseAuthorization();
 app.MapControllers();
 try

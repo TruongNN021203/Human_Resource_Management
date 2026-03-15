@@ -1,7 +1,9 @@
+using AuthService.Domain.Entities.User.Enum;
 using Shared.Kernel.Common;
 
 namespace AuthService.Domain.Entities;
-public class Account: AggregateRoot
+
+public class Account : AggregateRoot
 {
     public string EmployeeCode { get; private set; } = default!;
     public string FullName { get; private set; } = default!;
@@ -16,9 +18,10 @@ public class Account: AggregateRoot
     public long? EducationLevelId { get; private set; }
     public long SalaryGradeId { get; private set; }
     public string? AvatarUrl { get; private set; }
-    public string Status { get; private set; } = "Active";
-     
-     
+    public Status Status { get; private set; } = Status.Active;
+
+    public Role Role { get; private set; } = Role.Staff;
+
     public Account(
     string employeeCode,
     string fullName,
@@ -27,7 +30,10 @@ public class Account: AggregateRoot
     DateTime dateOfBirth,
     string? gender = null,
     string? phone = null,
-    string? identityNumber = null
+    string? identityNumber = null,
+    Role role = Role.Staff,
+    Status status = Status.Active
+
 )
     {
         Id = IdGenerator.NewId();
@@ -37,9 +43,10 @@ public class Account: AggregateRoot
         DateOfBirth = dateOfBirth;
         Gender = gender;
         Phone = phone;
-        Password=password;
+        Password = password;
         IdentityNumber = identityNumber;
-        Status = "Active";
+        Status = status;
+        Role = role;
     }
-     
+
 }

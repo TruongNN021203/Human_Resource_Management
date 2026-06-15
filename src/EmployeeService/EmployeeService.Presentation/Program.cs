@@ -30,7 +30,7 @@ builder.Services.AddSwaggerGen(c =>
         Version = "v1"
     });
 });
-builder.Services.AddJWTAuthenticationScheme(builder.Configuration);
+// builder.Services.AddJWTAuthenticationScheme(builder.Configuration);
 
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())

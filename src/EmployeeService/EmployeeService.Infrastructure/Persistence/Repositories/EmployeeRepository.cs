@@ -23,7 +23,7 @@ public sealed class EmployeeRepository : IEmployeeRepository
 
     public async Task AddAsync(Employee employee, CancellationToken ct = default)
     {
-        _dbContext.Employees.Add(employee);
+        _dbContext.Employees.AddAsync(employee);
         await _dbContext.SaveChangesAsync(ct);
     }
 

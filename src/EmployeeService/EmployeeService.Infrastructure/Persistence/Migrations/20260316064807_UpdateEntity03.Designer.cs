@@ -3,6 +3,7 @@ using System;
 using EmployeeService.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EmployeeService.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(EmployeeDbContext))]
-    partial class EmployeeDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260316064807_UpdateEntity03")]
+    partial class UpdateEntity03
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -130,6 +133,9 @@ namespace EmployeeService.Infrastructure.Persistence.Migrations
                     b.Property<long?>("ParentId")
                         .HasColumnType("bigint");
 
+                    b.Property<long?>("ParentId1")
+                        .HasColumnType("bigint");
+
                     b.Property<string>("Phone")
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)");
@@ -151,6 +157,8 @@ namespace EmployeeService.Infrastructure.Persistence.Migrations
                         .IsUnique();
 
                     b.HasIndex("ParentId");
+
+                    b.HasIndex("ParentId1");
 
                     b.HasIndex("PublicId")
                         .IsUnique();
@@ -589,6 +597,12 @@ namespace EmployeeService.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("EmployeeService.Domain.Entities.WorkType", null)
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("EmployeeService.Domain.Entities.WorkType", "WorkType")
                         .WithMany("AttendanceRecords")
                         .HasForeignKey("WorkTypeId")
@@ -602,10 +616,14 @@ namespace EmployeeService.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("EmployeeService.Domain.Entities.Department", b =>
                 {
-                    b.HasOne("EmployeeService.Domain.Entities.Department", "Parent")
-                        .WithMany("Children")
+                    b.HasOne("EmployeeService.Domain.Entities.Department", null)
+                        .WithMany()
                         .HasForeignKey("ParentId")
                         .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("EmployeeService.Domain.Entities.Department", "Parent")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentId1");
 
                     b.Navigation("Parent");
                 });

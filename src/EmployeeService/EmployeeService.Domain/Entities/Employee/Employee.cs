@@ -19,15 +19,19 @@ public class Employee : AggregateRoot
     public string Status { get; set; } = "Active";
     public long? IdentityUserId { get; set; }
     public SalaryGrade SalaryGrade { get; set; }
+    public Department Department { get; set; }
+    public ICollection<AttendanceRecord> AttendanceRecords { get; set; }
+
     public Employee(
     string employeeCode,
     string fullName,
     string email,
+    long salaryGradeId,
     DateTime dateOfBirth,
     string? gender = null,
     string? phone = null,
     string? identityNumber = null
-)
+    )
     {
         Id = IdGenerator.NewId();
         EmployeeCode = employeeCode;
@@ -38,6 +42,7 @@ public class Employee : AggregateRoot
         Phone = phone;
         IdentityNumber = identityNumber;
         Status = "Active";
+        SalaryGradeId = salaryGradeId;
     }
     public void AssignSalaryGrade(SalaryGrade salaryGrade)
     {

@@ -11,7 +11,7 @@ namespace Presentation.Endpoints.Employees;
 
 [ApiController]
 [Route(Router.EmployeeRoutes.Employees)]
-[Authorize]
+//[Authorize]
 public sealed class ListEmployeeEndpoint(ISender sender)
     : EndpointBaseAsync
         .WithoutRequest

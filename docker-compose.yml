@@ -8,12 +8,19 @@ services:
       - "${AUTH_SERVICE_PORT}:${AUTH_SERVICE_INTERNAL_PORT}"
     environment:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
       ConnectionStrings__AuthDb: >
         Host=${POSTGRES_HOST};
         Port=${POSTGRES_PORT};
         Database=${AUTH_POSTGRES_DB};
         Username=${POSTGRES_USER};
         Password=${POSTGRES_PASSWORD}
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
     networks:
       - ${DOCKER_NETWORK}
   employee-service:
@@ -25,12 +32,19 @@ services:
       - "${EMPLOYEE_SERVICE_PORT}:${EMPLOYEE_SERVICE_INTERNAL_PORT}"
     environment:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
       ConnectionStrings__EmployeeDb: >
         Host=${POSTGRES_HOST};
         Port=${POSTGRES_PORT};
         Database=${POSTGRES_DB};
         Username=${POSTGRES_USER};
         Password=${POSTGRES_PASSWORD}
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
     networks:
       - ${DOCKER_NETWORK}
 
@@ -45,6 +59,23 @@ services:
       - employee-service
     environment:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
+    networks:
+      - ${DOCKER_NETWORK}
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
     networks:
       - ${DOCKER_NETWORK}
 

@@ -9,7 +9,8 @@ public class AttendanceRecord : Entity
     public DateTime? CheckIn { get; set; }
     public DateTime? CheckOut { get; set; }
     public long WorkTypeId { get; set; }
-
+    public Employee Employee { get; set; }
+    public WorkType WorkType { get; set; }
     protected AttendanceRecord() { }
 
     public AttendanceRecord(

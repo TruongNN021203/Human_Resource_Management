@@ -11,6 +11,9 @@ public class Department : AggregateRoot
     public string? Note { get; private set; }
     public long? ParentId { get; private set; }
 
+    public Department? Parent { get; private set; }
+    public ICollection<Department> Children { get; private set; } = new List<Department>();
+    public ICollection<Employee> Employees { get; private set; } = new List<Employee>();
     private Department() { }
 
     public Department(

@@ -1,4 +1,4 @@
-﻿namespace AuthService.Application.Interface
+namespace AuthService.Application.Interface
 {
     public interface ITokenFactory
     {
@@ -8,5 +8,6 @@
         string CreateAccessToken(
             IEnumerable<KeyValuePair<string, object>> claimList,
             DateTime expirationTime);
+        (string TokenValue, string TokenHash, int ExpiredAtUnixSeconds) CreateRefreshToken();
     }
 }

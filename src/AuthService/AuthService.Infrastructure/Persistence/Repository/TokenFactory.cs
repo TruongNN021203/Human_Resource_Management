@@ -1,9 +1,10 @@
-﻿using AuthService.Application.Interface;
+using AuthService.Application.Interface;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Shared.Kernel.Security;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace AuthService.Infrastructure.Persistence.Repository
@@ -22,8 +23,6 @@ namespace AuthService.Infrastructure.Persistence.Repository
         public DateOnly RefreshtokenExpiredTime =>
             DateOnly.FromDateTime(
                 DateTime.UtcNow.AddDays(_jwtSettings.ExpireTimeRefreshToken));
-
-
 
         public string CreateAccessToken(
             IEnumerable<KeyValuePair<string, object>> claimList,
@@ -47,6 +46,20 @@ namespace AuthService.Infrastructure.Persistence.Repository
             );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        public (string TokenValue, string TokenHash, int ExpiredAtUnixSeconds) CreateRefreshToken()
+        {
+            var bytes = new byte[64];
+            RandomNumberGenerator.Fill(bytes);
+            var tokenValue = Convert.ToBase64String(bytes);
+            var hashBytes = SHA256.HashData(Encoding.UTF8.GetBytes(tokenValue));
+            var tokenHash = Convert.ToBase64String(hashBytes);
+
+            var expiresAt = DateTime.UtcNow.AddDays(_jwtSettings.ExpireTimeRefreshToken);
+            var expiredAtUnix = (int)new DateTimeOffset(expiresAt).ToUnixTimeSeconds();
+
+            return (tokenValue, tokenHash, expiredAtUnix);
         }
     }
 }

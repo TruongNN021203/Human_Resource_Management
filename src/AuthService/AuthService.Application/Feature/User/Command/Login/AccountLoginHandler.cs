@@ -1,4 +1,3 @@
-﻿
 using AuthService.Application.Interface;
 using AuthService.Domain.Entities;
 using Mediator;
@@ -12,6 +11,7 @@ namespace AuthService.Application.Feature.User.Command.Login
         private readonly IAuthRepository _authRepository;
         private readonly ITokenFactory _tokenFactory;
         private readonly IPasswordHasher<Account> _passwordHasher;
+
         public AccountLoginHandler(IAuthRepository authRepository, ITokenFactory tokenFactory, IPasswordHasher<Account> passwordHasher)
         {
             _authRepository = authRepository;
@@ -21,46 +21,43 @@ namespace AuthService.Application.Feature.User.Command.Login
 
         public async ValueTask<AccountLoginResponse> Handle(AccountLoginCommand request, CancellationToken cancellationToken)
         {
-
-
-            var account = await _authRepository.GetByEmailAsync(request.Email!);
+            var account = await _authRepository.GetByEmailAsync(request.Email!, cancellationToken);
             if (account == null)
-            {
                 throw new DomainException("Invalid email");
-            }
-            else
-            {
-                //var hasher = new PasswordHasher<Account>();
 
-                //var passwordHash = hasher.HashPassword(null, "123456");
-
-                //Console.WriteLine(passwordHash);
-                var verifyResult = _passwordHasher.VerifyHashedPassword(
+            var verifyResult = _passwordHasher.VerifyHashedPassword(
                 account,
                 account.Password!,
-                request.Password!
-                 );
-                if (verifyResult == PasswordVerificationResult.Failed)
-                {
-                    throw new DomainException("Invalid password");
-                }
-                else
-                {
-                    var claims = new List<KeyValuePair<string, object>>
-                    {
-                        new ("userId", account.Id),
-                        new("email", account.Email)
-                    };
+                request.Password!);
+            if (verifyResult == PasswordVerificationResult.Failed)
+                throw new DomainException("Invalid password");
 
-                    var accessToken = _tokenFactory.CreateAccessToken(claims, _tokenFactory.AccesstokenExpiredTime);
+            var claims = new List<KeyValuePair<string, object>>
+            {
+                new("userId", account.Id),
+                new("email", account.Email)
+            };
 
-                    return new AccountLoginResponse
-                    {
-                        AccessToken = accessToken,
-                        ExpiredAt = _tokenFactory.AccesstokenExpiredTime
-                    };
-                }
-            }
+            var accessToken = _tokenFactory.CreateAccessToken(claims, _tokenFactory.AccesstokenExpiredTime);
+            var (refreshValue, refreshHash, refreshExpiredUnix) = _tokenFactory.CreateRefreshToken();
+            var familyId = Guid.NewGuid().ToString("N");
+            await _authRepository.AddRefreshTokenAsync(
+                account.Id,
+                refreshHash,
+                request.ClientIp,
+                familyId,
+                refreshExpiredUnix,
+                cancellationToken);
+
+            var refreshExpiresAt = DateTimeOffset.FromUnixTimeSeconds(refreshExpiredUnix).UtcDateTime;
+
+            return new AccountLoginResponse
+            {
+                AccessToken = accessToken,
+                AccessTokenExpiredAt = _tokenFactory.AccesstokenExpiredTime,
+                RefreshToken = refreshValue,
+                RefreshTokenExpiresAt = refreshExpiresAt
+            };
         }
     }
 }

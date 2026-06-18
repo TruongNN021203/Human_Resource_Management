@@ -3,6 +3,7 @@ using System;
 using EmployeeService.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EmployeeService.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(EmployeeDbContext))]
-    partial class EmployeeDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260316040741_UpdateEntity01")]
+    partial class UpdateEntity01
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -94,8 +97,6 @@ namespace EmployeeService.Infrastructure.Persistence.Migrations
                     b.HasIndex("PublicId")
                         .IsUnique();
 
-                    b.HasIndex("WorkTypeId");
-
                     b.ToTable("attendance_records", (string)null);
                 });
 
@@ -130,6 +131,9 @@ namespace EmployeeService.Infrastructure.Persistence.Migrations
                     b.Property<long?>("ParentId")
                         .HasColumnType("bigint");
 
+                    b.Property<long?>("ParentId1")
+                        .HasColumnType("bigint");
+
                     b.Property<string>("Phone")
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)");
@@ -151,6 +155,8 @@ namespace EmployeeService.Infrastructure.Persistence.Migrations
                         .IsUnique();
 
                     b.HasIndex("ParentId");
+
+                    b.HasIndex("ParentId1");
 
                     b.HasIndex("PublicId")
                         .IsUnique();
@@ -583,29 +589,29 @@ namespace EmployeeService.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("EmployeeService.Domain.Entities.AttendanceRecord", b =>
                 {
-                    b.HasOne("EmployeeService.Domain.Entities.Employee", "Employee")
-                        .WithMany("AttendanceRecords")
+                    b.HasOne("EmployeeService.Domain.Entities.Employee", null)
+                        .WithMany()
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("EmployeeService.Domain.Entities.WorkType", "WorkType")
-                        .WithMany("AttendanceRecords")
-                        .HasForeignKey("WorkTypeId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                    b.HasOne("EmployeeService.Domain.Entities.WorkType", null)
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Employee");
-
-                    b.Navigation("WorkType");
                 });
 
             modelBuilder.Entity("EmployeeService.Domain.Entities.Department", b =>
                 {
-                    b.HasOne("EmployeeService.Domain.Entities.Department", "Parent")
-                        .WithMany("Children")
+                    b.HasOne("EmployeeService.Domain.Entities.Department", null)
+                        .WithMany()
                         .HasForeignKey("ParentId")
                         .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("EmployeeService.Domain.Entities.Department", "Parent")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentId1");
 
                     b.Navigation("Parent");
                 });
@@ -681,19 +687,9 @@ namespace EmployeeService.Infrastructure.Persistence.Migrations
                     b.Navigation("Employees");
                 });
 
-            modelBuilder.Entity("EmployeeService.Domain.Entities.Employee", b =>
-                {
-                    b.Navigation("AttendanceRecords");
-                });
-
             modelBuilder.Entity("EmployeeService.Domain.Entities.SalaryGrade", b =>
                 {
                     b.Navigation("Employees");
-                });
-
-            modelBuilder.Entity("EmployeeService.Domain.Entities.WorkType", b =>
-                {
-                    b.Navigation("AttendanceRecords");
                 });
 #pragma warning restore 612, 618
         }

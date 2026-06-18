@@ -6,7 +6,7 @@ public class WorkType : Entity
 {
     public string Name { get; private set; } = default!;
     public float Coefficient { get; private set; }
-
+    public ICollection<AttendanceRecord> AttendanceRecords { get; set; }
     private WorkType() { }
 
     public WorkType(string name, float coefficient)

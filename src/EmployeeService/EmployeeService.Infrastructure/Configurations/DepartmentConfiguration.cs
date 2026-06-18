@@ -43,8 +43,8 @@ public class DepartmentConfiguration : IEntityTypeConfiguration<Department>
         builder.HasIndex(x => x.PublicId).IsUnique();
         builder.HasIndex(x => x.Code).IsUnique();
 
-        builder.HasOne<Department>()
-               .WithMany()
+        builder.HasOne(x => x.Parent)
+               .WithMany(x => x.Children)
                .HasForeignKey(x => x.ParentId)
                .OnDelete(DeleteBehavior.Restrict);
     }

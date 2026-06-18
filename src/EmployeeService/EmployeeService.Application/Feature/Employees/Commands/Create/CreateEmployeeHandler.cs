@@ -1,7 +1,8 @@
+using Contracts.Employees.Events;
 using EmployeeService.Application.Interfaces;
 using EmployeeService.Domain.Entities;
-using Mediator;
 
+using Mediator;
 namespace EmployeeService.Application.Employees.Commands.Create;
 
 public sealed class CreateEmployeeHandler
@@ -9,13 +10,15 @@ public sealed class CreateEmployeeHandler
 {
     private readonly IEmployeeRepository _employeeRepository;
     private readonly IUnitOfWork _unitOfWork;
-
+    private readonly IEventPublisher _eventPublisher;
     public CreateEmployeeHandler(
         IEmployeeRepository employeeRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        IEventPublisher eventPublisher)
     {
         _employeeRepository = employeeRepository;
         _unitOfWork = unitOfWork;
+        _eventPublisher = eventPublisher;
     }
 
     public async ValueTask<long> Handle(
@@ -36,13 +39,24 @@ public sealed class CreateEmployeeHandler
                 command.Code,
                 command.FullName,
                 command.Email,
+                command.SalaryGradeId,
                 command.DateOfBirth
             );
 
             await _employeeRepository.AddAsync(employee, ct);
 
             await _unitOfWork.CommitAsync();
-
+            await _eventPublisher.PublishAsync(
+                        new EmployeeCreatedEvent(
+                            employee.EmployeeCode,
+                            employee.FullName,
+                            command.Email,
+                            command.DateOfBirth,
+                            command.SalaryGradeId,
+                            employee.CreatedAt
+                            ),
+                        ct
+                    );
             return employee.Id;
         }
         catch

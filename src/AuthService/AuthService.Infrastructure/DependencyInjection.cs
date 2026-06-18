@@ -1,8 +1,10 @@
 using AuthService.Application.Interface;
 using AuthService.Domain.Entities;
 using AuthService.Infrastructure.Data;
+using AuthService.Infrastructure.Messaging.Consumers;
 using AuthService.Infrastructure.Persistence.Repository;
 using AuthService.Infrastructure.Persistence.UnitOfWork;
+using MassTransit;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -31,6 +33,32 @@ public static class DependencyInjection
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         services.AddScoped<IPasswordHasher<Account>, PasswordHasher<Account>>();
+
+        services.AddMassTransit(x =>
+        {
+            x.AddConsumer<EmployeeCreatedConsumer>();
+
+            x.UsingRabbitMq((context, cfg) =>
+            {
+                var rabbitHost = configuration["RABBITMQ_HOST"] ?? "rabbitmq";
+                var rabbitPort = int.TryParse(configuration["RABBITMQ_PORT"], out var p) ? p : 5672;
+                var rabbitUser = configuration["RABBITMQ_DEFAULT_USER"] ?? "guest";
+                var rabbitPass = configuration["RABBITMQ_DEFAULT_PASS"] ?? "guest";
+
+                var rabbitUri = new Uri($"localhost://{rabbitHost}:{rabbitPort}/");
+
+                cfg.Host(rabbitHost, "/", h =>
+                {
+                    h.Username(rabbitUser);
+                    h.Password(rabbitPass);
+                });
+
+                cfg.ReceiveEndpoint("employee-created-queue", e =>
+                {
+                    e.ConfigureConsumer<EmployeeCreatedConsumer>(context);
+                });
+            });
+        });
         return services;
     }
 }
